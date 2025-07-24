@@ -1,3 +1,5 @@
+// TP : créer un gestionnaire de fichier
+
 use std::fs::{self, OpenOptions};
 use std::io::{self, Write};
 use std::path::PathBuf;
