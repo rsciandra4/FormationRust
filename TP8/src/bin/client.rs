@@ -9,7 +9,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut reader = BufReader::new(reader);
     let mut resp = String::new();
 
-    println!("Connecté au serveur. Tapez un message :");
+    println!("Connecté au serveur.Tapez un message :");
 
     loop {
         let mut input = String::new();

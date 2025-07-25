@@ -4,11 +4,11 @@ use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let listener = TcpListener::bind("0.0.0.0:6000").await?;
-    println!("Serveur en écoute sur 0.0.0.0:6000");
+    println!("Serveur en ecoute sur 0.0.0.0:6000");
 
     loop {
         let (socket, addr) = listener.accept().await?;
-        println!("Client connecté : {addr}");
+        println!("Client  connecté : {addr}");
 
         tokio::spawn(async move {
             if let Err(e) = handle_client(socket).await {
