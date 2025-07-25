@@ -12,10 +12,10 @@ const BIND_ADDR: &str = "0.0.0.0:4000";
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    // Crée le dossier logs/ si nécessaire
+    // Création du dossier logs si nécessaire
     fs::create_dir_all(LOG_DIR).await?;
 
-    // Fichier de log protégé par un Mutex pour accès concurrent
+    // Ouverture du fichier log en mode ajout, protégé par Mutex
     let log_file = OpenOptions::new()
         .create(true)
         .append(true)
@@ -23,13 +23,16 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .await?;
     let log_file = Arc::new(Mutex::new(log_file));
 
+    // Démarrage du serveur TCP
     let listener = TcpListener::bind(BIND_ADDR).await?;
     println!("Serveur de journalisation lancé sur {BIND_ADDR}");
 
+    // Boucle pour accepter plusieurs clients
     loop {
         let (socket, addr) = listener.accept().await?;
         let log_file = Arc::clone(&log_file);
 
+        // Chaque client est géré dans une tâche asynchrone
         tokio::spawn(async move {
             if let Err(e) = handle_client(socket, addr.to_string(), log_file).await {
                 eprintln!("Erreur avec {addr}: {e}");
@@ -38,6 +41,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     }
 }
 
+// Fonction pour gérer un client
 async fn handle_client(
     socket: TcpStream,
     client: String,
@@ -46,6 +50,7 @@ async fn handle_client(
     let reader = BufReader::new(socket);
     let mut lines = reader.lines();
 
+    // Lecture des messages et écriture dans le log avec horodatage
     while let Some(line) = lines.next_line().await? {
         let timestamp = Utc::now().to_rfc3339();
         let log_entry = format!("[{timestamp}]  {line}\n");
@@ -57,4 +62,3 @@ async fn handle_client(
 
     Ok(())
 }
-git 
